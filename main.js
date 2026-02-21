@@ -27,6 +27,9 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
+
+  // 移除菜单栏
+  mainWindow.setMenu(null);
 }
 
 // 初始化数据文件
