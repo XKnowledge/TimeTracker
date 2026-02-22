@@ -30,6 +30,16 @@
             font-family: 'Noto Sans SC', sans-serif;
         }
 
+        /* 隐藏滚动条 */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         .font-display {
             font-family: 'Space Grotesk', sans-serif;
         }
@@ -402,23 +412,6 @@
             border-radius: 12px;
             border: 1px solid var(--border);
             background: var(--card);
-        }
-
-        .table-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .table-container::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .table-container::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 3px;
-        }
-
-        .table-container::-webkit-scrollbar-thumb:hover {
-            background: var(--fg-muted);
         }
     </style>
 </head>
