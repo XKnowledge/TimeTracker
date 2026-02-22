@@ -19,6 +19,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 900,
     height: 700,
+    frame: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -149,4 +150,23 @@ ipcMain.handle('import-data', async () => {
 // IPC 处理：获取数据存储路径（供用户参考）
 ipcMain.handle('get-data-path', () => {
   return getDataPath();
+});
+
+// IPC 处理：窗口控制
+ipcMain.handle('minimize-window', () => {
+  if (mainWindow) mainWindow.minimize();
+});
+
+ipcMain.handle('maximize-window', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
+});
+
+ipcMain.handle('close-window', () => {
+  if (mainWindow) mainWindow.close();
 });

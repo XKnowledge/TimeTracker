@@ -40,6 +40,56 @@
             scrollbar-width: none;
         }
 
+        /* 窗口拖拽区域 */
+        .title-bar {
+            -webkit-app-region: drag;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            height: 32px;
+            background: var(--bg-subtle);
+            border-bottom: 1px solid var(--border);
+            padding-right: 8px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .window-controls {
+            -webkit-app-region: no-drag;
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: none;
+            background: transparent;
+        }
+
+        .window-btn:hover {
+            background: var(--border);
+        }
+
+        .window-btn.close:hover {
+            background: #e53935;
+            color: white;
+        }
+
+        /* 内容区域顶部留出标题栏空间 */
+        .content-wrapper {
+            padding-top: 32px;
+        }
+
         .font-display {
             font-family: 'Space Grotesk', sans-serif;
         }
@@ -417,6 +467,29 @@
 </head>
 
 <body class="min-h-screen grid-bg">
+    <!-- 标题栏（用于拖拽窗口） -->
+    <div class="title-bar">
+        <div class="window-controls">
+            <button class="window-btn" onclick="minimizeWindow()" title="最小化">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+            <button class="window-btn" onclick="maximizeWindow()" title="最大化">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                </svg>
+            </button>
+            <button class="window-btn close" onclick="closeWindow()" title="关闭">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <line x1="6" y1="18" x2="18" y2="6"></line>
+                </svg>
+            </button>
+        </div>
+    </div>
+    <!-- 内容区域 -->
+    <div class="content-wrapper">
     <!-- 装饰球体 -->
     <div class="gradient-orb orb-1"></div>
     <div class="gradient-orb orb-2"></div>
@@ -553,6 +626,7 @@
         <div class="mt-8 text-center text-sm text-[var(--fg-muted)] animate-fade-in" style="animation-delay: 0.7s;">
             <p>提示：事件需按完成时间顺序录入，系统自动计算持续时间与重要事件占比</p>
         </div>
+    </div>
     </div>
     <!-- 提示弹窗 -->
     <div class="toast error" id="toast"></div>
@@ -984,6 +1058,25 @@
             } catch (error) {
                 console.error('导入失败:', error);
                 showError('导入失败');
+            }
+        }
+
+        // 窗口控制
+        function minimizeWindow() {
+            if (isElectron()) {
+                window.timeTrackerAPI.minimizeWindow();
+            }
+        }
+
+        function maximizeWindow() {
+            if (isElectron()) {
+                window.timeTrackerAPI.maximizeWindow();
+            }
+        }
+
+        function closeWindow() {
+            if (isElectron()) {
+                window.timeTrackerAPI.closeWindow();
             }
         }
     </script>

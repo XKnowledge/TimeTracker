@@ -10,5 +10,9 @@ contextBridge.exposeInMainWorld('timeTrackerAPI', {
     // 从文件导入数据
     importData: () => ipcRenderer.invoke('import-data'),
     // 获取数据存储路径
-    getDataPath: () => ipcRenderer.invoke('get-data-path')
+    getDataPath: () => ipcRenderer.invoke('get-data-path'),
+    // 窗口控制
+    minimizeWindow: () => ipcRenderer.invoke('minimize-window'),
+    maximizeWindow: () => ipcRenderer.invoke('maximize-window'),
+    closeWindow: () => ipcRenderer.invoke('close-window')
 });
