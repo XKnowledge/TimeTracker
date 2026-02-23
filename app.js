@@ -77,6 +77,10 @@ async function saveData() {
 
 // 保存开始时间
 async function saveStartTime() {
+    // 确保当前日期数据存在
+    if (!allData[currentDate]) {
+        allData[currentDate] = { startTime: '08:00', events: [] };
+    }
     const startTime = document.getElementById('startTime').value;
     allData[currentDate].startTime = startTime;
     await saveData();
@@ -125,6 +129,10 @@ async function goToToday() {
 
 // 添加事件
 async function addEvent() {
+    // 确保当前日期数据存在
+    if (!allData[currentDate]) {
+        allData[currentDate] = { startTime: '08:00', events: [] };
+    }
     const events = allData[currentDate].events;
     const newEvent = {
         id: Date.now(),
@@ -220,6 +228,10 @@ function getTimeDiff(time1, time2) {
 
 // 渲染表格
 function renderTable() {
+    // 确保当前日期数据存在
+    if (!allData[currentDate] || !allData[currentDate].events) {
+        return;
+    }
     const events = allData[currentDate].events;
     const tbody = document.getElementById('eventBody');
     const emptyState = document.getElementById('emptyState');
@@ -294,6 +306,10 @@ function renderTable() {
 
 // 更新统计
 function updateStats() {
+    // 确保当前日期数据存在
+    if (!allData[currentDate] || !allData[currentDate].events) {
+        return;
+    }
     const events = allData[currentDate].events;
     const startTime = document.getElementById('startTime').value;
     // 事件统计
