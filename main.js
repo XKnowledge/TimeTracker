@@ -28,6 +28,7 @@ function createWindow() {
   });
 
   mainWindow.loadFile('index.html');
+  // mainWindow.webContents.openDevTools();
 
   // 移除菜单栏
   mainWindow.setMenu(null);
