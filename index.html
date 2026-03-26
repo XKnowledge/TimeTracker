@@ -12,6 +12,7 @@
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 </head>
 
 <body class="min-h-screen grid-bg">
@@ -129,6 +130,21 @@
                 <div class="progress-bar mt-3">
                     <div class="progress-fill" id="ratioProgress" style="width: 0%"></div>
                 </div>
+            </div>
+        </div>
+        <!-- 月度趋势图 -->
+        <div class="chart-container mb-6 animate-fade-in" style="animation-delay: 0.55s;">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-display text-lg font-semibold flex items-center gap-2">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                    </svg>
+                    月度趋势
+                </h2>
+                <span class="text-xs px-2 py-1 rounded-full" style="background: var(--bg-hover); color: var(--fg-muted);">过去 30 天</span>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="monthlyChart"></canvas>
             </div>
         </div>
         <!-- 表格区域 -->
