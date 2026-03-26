@@ -2,6 +2,7 @@
 let currentDate = '';
 let allData = {};
 let isLoading = false;
+let monthlyChart = null;
 
 // 检查是否在 Electron 环境中
 function isElectron() {
@@ -349,6 +350,8 @@ function updateStats() {
     }
     document.getElementById('importantRatio').textContent = `${ratio}%`;
     document.getElementById('ratioProgress').style.width = `${Math.min(ratio, 100)}%`;
+    // 更新月度趋势图
+    renderChart();
 }
 
 // 显示提示
@@ -476,4 +479,181 @@ function closeWindow() {
     if (isElectron()) {
         window.timeTrackerAPI.closeWindow();
     }
+}
+
+// 计算过去30天的统计数据
+function computeMonthlyStats() {
+    const stats = [];
+    const endDate = new Date(currentDate);
+    for (let i = 29; i >= 0; i--) {
+        const d = new Date(endDate);
+        d.setDate(d.getDate() - i);
+        const dateStr = formatDate(d);
+        const label = `${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const dayData = allData[dateStr];
+        let totalSpan = 0;
+        let importantTime = 0;
+        let ratio = 0;
+        if (dayData && dayData.events && dayData.events.length > 0) {
+            const events = dayData.events;
+            const startTime = dayData.startTime || '08:00';
+            const lastEvent = events[events.length - 1];
+            if (lastEvent.time) {
+                totalSpan = getTimeDiff(startTime, lastEvent.time);
+                let prevTime = startTime;
+                for (const event of events) {
+                    if (event.time) {
+                        const duration = getTimeDiff(prevTime, event.time);
+                        if (duration > 0 && event.important) {
+                            importantTime += duration;
+                        }
+                        prevTime = event.time;
+                    }
+                }
+                if (totalSpan > 0) {
+                    ratio = parseFloat((importantTime / totalSpan * 100).toFixed(1));
+                }
+            }
+        }
+        stats.push({
+            label,
+            totalHours: parseFloat((totalSpan / 60).toFixed(2)),
+            importantHours: parseFloat((importantTime / 60).toFixed(2)),
+            ratio
+        });
+    }
+    return stats;
+}
+
+// 渲染月度趋势图
+function renderChart() {
+    const ctx = document.getElementById('monthlyChart');
+    if (!ctx || typeof Chart === 'undefined') return;
+    const stats = computeMonthlyStats();
+    const labels = stats.map(s => s.label);
+    const totalData = stats.map(s => s.totalHours);
+    const importantData = stats.map(s => s.importantHours);
+    const ratioData = stats.map(s => s.ratio);
+
+    if (monthlyChart) {
+        monthlyChart.destroy();
+    }
+
+    monthlyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [
+                {
+                    label: '总时间 (小时)',
+                    data: totalData,
+                    borderColor: '#6b7280',
+                    backgroundColor: 'rgba(107, 114, 128, 0.08)',
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    pointHoverRadius: 5,
+                    tension: 0.3,
+                    fill: true,
+                    yAxisID: 'y'
+                },
+                {
+                    label: '有效时间 (小时)',
+                    data: importantData,
+                    borderColor: '#d97706',
+                    backgroundColor: 'rgba(217, 119, 6, 0.12)',
+                    borderWidth: 2,
+                    pointRadius: 2,
+                    pointHoverRadius: 5,
+                    tension: 0.3,
+                    fill: true,
+                    yAxisID: 'y'
+                },
+                {
+                    label: '有效时间率 (%)',
+                    data: ratioData,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    borderDash: [4, 4],
+                    pointRadius: 2,
+                    pointHoverRadius: 5,
+                    tension: 0.3,
+                    fill: false,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 16,
+                        font: { size: 12 }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(26, 29, 35, 0.9)',
+                    titleFont: { size: 13 },
+                    bodyFont: { size: 12 },
+                    padding: 10,
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const value = context.parsed.y;
+                            if (label.includes('%')) {
+                                return `${label}: ${value}%`;
+                            }
+                            return `${label}: ${value}h`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        font: { size: 11 },
+                        maxRotation: 45,
+                        autoSkip: true,
+                        maxTicksLimit: 15
+                    }
+                },
+                y: {
+                    position: 'left',
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: '小时',
+                        font: { size: 12 }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.05)' },
+                    ticks: { font: { size: 11 } }
+                },
+                y1: {
+                    position: 'right',
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: '有效率 %',
+                        font: { size: 12 }
+                    },
+                    grid: { drawOnChartArea: false },
+                    ticks: {
+                        font: { size: 11 },
+                        callback: function(value) { return value + '%'; }
+                    }
+                }
+            }
+        }
+    });
 }
