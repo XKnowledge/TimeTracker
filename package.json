@@ -1,6 +1,6 @@
 {
   "name": "TimeTracker",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "个人时间追踪软件",
   "main": "main.js",
   "author": "XKnowledge Team",
