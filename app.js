@@ -148,7 +148,7 @@ async function addEvent() {
     setTimeout(() => {
         const lastRow = document.querySelector('#eventBody tr:last-child');
         if (lastRow) {
-            const descInput = lastRow.querySelector('input[data-field="description"]');
+            const descInput = lastRow.querySelector('textarea[data-field="description"]');
             if (descInput) descInput.focus();
         }
     }, 50);
@@ -227,6 +227,17 @@ function getTimeDiff(time1, time2) {
     return (h2 * 60 + m2) - (h1 * 60 + m1);
 }
 
+// 描述输入框自适应高度：内容变多时自动增高，确保所有文字可见且自动换行
+function autoGrow(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+}
+
+// 窗口尺寸变化（如最大化/还原）时重新换行，保持高度匹配
+window.addEventListener('resize', () => {
+    document.querySelectorAll('textarea[data-field="description"]').forEach(autoGrow);
+});
+
 // 渲染表格
 function renderTable() {
     // 确保当前日期数据存在
@@ -266,13 +277,13 @@ function renderTable() {
                     </div>
                 </td>
                 <td>
-                    <input type="text"
-                           class="input-clean"
+                    <textarea class="input-clean"
                            placeholder="输入事件描述..."
-                           value="${escapeHtml(event.description)}"
                            data-field="description"
+                           rows="1"
+                           oninput="autoGrow(this)"
                            onchange="updateEvent(${event.id}, 'description', this.value)"
-                           aria-label="事件描述">
+                           aria-label="事件描述">${escapeHtml(event.description)}</textarea>
                 </td>
                 <td>
                     <input type="time"
@@ -303,6 +314,8 @@ function renderTable() {
             </tr>
         `;
     }).join('');
+    // 描述输入框初始化高度，完整显示多行内容
+    tbody.querySelectorAll('textarea[data-field="description"]').forEach(autoGrow);
 }
 
 // 更新统计

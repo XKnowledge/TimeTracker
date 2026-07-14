@@ -179,6 +179,28 @@ body {
     font-weight: 500;
 }
 
+/* 描述输入框：多行自适应，长文字自动换行完整显示 */
+textarea.input-clean {
+    resize: none;
+    overflow: hidden;
+    display: block;
+    box-sizing: border-box;
+    min-height: 1.5em;
+    line-height: 1.5;
+    font-family: inherit;
+    /* 用 padding + 负 margin 让内容贴齐单元格，与单行输入框视觉一致 */
+    padding: 4px 8px;
+    margin: -4px -8px;
+    border-radius: 4px;
+}
+
+textarea.input-clean:focus {
+    background: var(--card);
+    box-shadow: 0 0 0 2px var(--highlight);
+    /* 覆盖通用 :focus 的宽度扩张，避免聚焦时整列跳动 */
+    width: 100%;
+}
+
 /* 复选框样式 */
 .checkbox-custom {
     width: 20px;
